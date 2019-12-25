@@ -1,0 +1,98 @@
+<html>
+    <head>
+        <title>Ghost Maze</title>
+        <style></style>
+    </head>
+    <body style="background-color: #2980b9;">
+        <img id="sub" style="position: absolute; top: 500px; width: 100px" src="sub.png">
+        <img id="coin" style="position: absolute; left: 300px; width: 50px;" src="coin.png">
+        <p id="score" style="position: absolute; color:white; font-size: 20px;">Score: 0</p> 
+        <script>
+
+            var score = 0, angle = 0, speed = 4, subXposition = 0, subYposition = 500, gameTimer;
+
+            // Listen for keypress events and call handleKeys.
+            document.addEventListener('keydown', handleKeys);
+
+            gameTimer = window.setInterval(moveThings, 20);
+
+            function setLeft(id, x){
+            	document.getElementById(id).style.left = `${x}px`;
+            }
+
+            function setTop(id, y){
+                document.getElementById(id).style.top = `${y}px`;
+            }
+
+            function getLeft(id, x){
+            	document.getElementById(id).offsetLeft;
+            }
+
+            function getTop(id, y){
+                document.getElementById(id).offsetTop;
+            }
+
+            function randomNumber(low, high) {
+                return(Math.floor(low+Math.random() * (1 + high - low)));
+            }
+
+            function isOverlapping(ob1, ob2){
+                return ((getLeft(ob1) + 50 > getLeft(ob2)) && (getLeft(ob1) < getLeft(ob2) + 50) && (getTop(ob1) + 50 > getTop(ob2)) && (getTop(ob1) < getTop(ob2) + 50));
+            }
+
+            function moveThings(){
+                subXposition = subXposition + speed * Math.cos(Math.PI * angle/180);
+                subYposition = subYposition + speed * Math.sin(Math.PI * angle/180);
+                if (subXposition < -100) {
+                    subXposition = innerWidth;
+                }
+                if (subXposition > innerWidth) {
+                    subXposition = -100;
+                }
+                if (subYposition < -100) {
+                    subYposition = innerHeight;
+                }
+                if (subYposition > innerHeight) {
+                    subYposition = -100;
+                }
+                setLeft("sub", subXposition);
+                setTop("sub", subYposition);
+                y = getTop("coin");
+                setTop("coin", y + 1 + score * 0.1);
+                checkHit();
+                if (y > window.innerHeight){
+                    gameOver();
+                }
+            }
+
+            function checkHit(){
+                if(isOverlapping("sub", "coin")){
+                    score++;
+                    document.getElementById("score").innerHTML = `Score: ${score}`;
+                    setTop("coin", 0);
+                    setLeft("coin", randomNumber(0, innerWidth - 100));
+                    // new Audio("beep.mp3").play();
+                }
+            }
+
+            function handleKeys(event){
+
+                if(event.key == 'ArrowUp') {
+                    angle = angle - 10;
+                }
+                if(event.key == 'ArrowDown'){
+                    angle = angle + 10;
+                }
+                document.getElementById("sub").style.webkitTransform = `rotate(${angle}deg)`;
+            }
+
+            function gameOver(){
+                clearInterval(gameTimer);
+                if(confirm("Game Over - Click OK to play again.") == true) {
+                    location.reload();
+                }
+            }
+
+        </script>
+    </body>
+</html>
